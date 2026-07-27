@@ -4,10 +4,7 @@
 
 #include "Misc/Paths.h"
 
-
 UTextAssetEditorSettings::UTextAssetEditorSettings()
-	: BackgroundColor(FLinearColor::Gray)
-	, ForegroundColor(FLinearColor::White)
-	, Font(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/DroidSansMono.ttf"), 14))
-	, Margin(4.0f)
-{ }
+	: BackgroundColor(FLinearColor::Gray), ForegroundColor(FLinearColor::White), Font(FSlateFontInfo(FPaths::EngineContentDir() / TEXT("Slate/Fonts/DroidSansMono.ttf"), 12)), Margin(4.0f)
+{
+}
