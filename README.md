@@ -1,5 +1,7 @@
 # TextAsset
 
+Update for UE5, Targeted Unreal Engine 5.6, Should work on newer versions.
+
 Unreal Engine 4 plug-in that adds a text asset and editor for personal notes.
 
 ![Screenshot](Docs/screenshot.png)
