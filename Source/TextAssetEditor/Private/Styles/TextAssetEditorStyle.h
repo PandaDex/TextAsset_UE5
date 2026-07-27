@@ -1,9 +1,12 @@
-// Copyright 1998-2017 Epic Games, Inc. All Rights Reserved.
+// Copyright Epic Games, Inc. All Rights Reserved.
 
 #pragma once
 
-#include "IPluginManager.h"
+#include "Interfaces/IPluginManager.h"
 #include "Brushes/SlateImageBrush.h"
+#include "Brushes/SlateBoxBrush.h"
+#include "Brushes/SlateBorderBrush.h"
+#include "Fonts/SlateFontInfo.h"
 #include "Styling/SlateStyle.h"
 #include "Styling/SlateStyleRegistry.h"
 
@@ -13,39 +16,34 @@
 #define TTF_FONT(RelativePath, ...) FSlateFontInfo(RootToContentDir(RelativePath, TEXT(".ttf")), __VA_ARGS__)
 #define OTF_FONT(RelativePath, ...) FSlateFontInfo(RootToContentDir(RelativePath, TEXT(".otf")), __VA_ARGS__)
 
-
-/**
- * Implements the visual style of the text asset editor UI.
- */
-class FTextAssetEditorStyle
-	: public FSlateStyleSet
+class FTextAssetEditorStyle : public FSlateStyleSet
 {
 public:
 
-	/** Default constructor. */
-	 FTextAssetEditorStyle()
-		 : FSlateStyleSet("TextAssetEditorStyle")
-	 {
+	FTextAssetEditorStyle()
+		: FSlateStyleSet(TEXT("TextAssetEditorStyle"))
+	{
 		const FVector2D Icon16x16(16.0f, 16.0f);
 		const FVector2D Icon20x20(20.0f, 20.0f);
 		const FVector2D Icon40x40(40.0f, 40.0f);
 
-		const FString BaseDir = IPluginManager::Get().FindPlugin("TextAsset")->GetBaseDir();
-		SetContentRoot(BaseDir / TEXT("Content"));
+		TSharedPtr<IPlugin> Plugin = IPluginManager::Get().FindPlugin(TEXT("TextAsset"));
+		check(Plugin.IsValid());
 
-		// set new styles here, for example...
-		//Set("TextAssetEditor.FancyButton", new IMAGE_BRUSH("icon_forward_40x", Icon40x40));
-		
+		SetContentRoot(Plugin->GetBaseDir() / TEXT("Content"));
+
+		// Example:
+		// Set("TextAssetEditor.FancyButton",
+		//     new IMAGE_BRUSH("icon_forward_40x", Icon40x40));
+
 		FSlateStyleRegistry::RegisterSlateStyle(*this);
-	 }
+	}
 
-	 /** Destructor. */
-	 ~FTextAssetEditorStyle()
-	 {
+	virtual ~FTextAssetEditorStyle()
+	{
 		FSlateStyleRegistry::UnRegisterSlateStyle(*this);
-	 }
+	}
 };
-
 
 #undef IMAGE_BRUSH
 #undef BOX_BRUSH

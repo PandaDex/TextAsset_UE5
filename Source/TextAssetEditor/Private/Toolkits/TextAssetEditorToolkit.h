@@ -67,7 +67,8 @@ public:
 	//~ FGCObject interface
 
 	virtual void AddReferencedObjects(FReferenceCollector& Collector) override;
-	
+	virtual FString GetReferencerName() const override;
+
 protected:
 
 	//~ FEditorUndoClient interface

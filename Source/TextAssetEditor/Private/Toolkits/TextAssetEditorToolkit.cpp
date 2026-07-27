@@ -4,7 +4,7 @@
 
 #include "Editor.h"
 #include "EditorReimportHandler.h"
-#include "EditorStyleSet.h"
+#include "Styling/AppStyle.h"
 #include "STextAssetEditor.h"
 #include "TextAsset.h"
 #include "UObject/NameTypes.h"
@@ -55,31 +55,20 @@ void FTextAssetEditorToolkit::Initialize(UTextAsset* InTextAsset, const EToolkit
 	GEditor->RegisterForUndo(this);
 
 	// create tab layout
-	const TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("Standalone_TextAssetEditor")
+	// NOTE: renamed from "Standalone_TextAssetEditor" to "_v2" because the tab
+	// shape changed (the toolbar is no longer a dockable tab in UE5) - bumping
+	// the layout name avoids the editor trying to reapply a stale cached layout.
+	const TSharedRef<FTabManager::FLayout> Layout = FTabManager::NewLayout("Standalone_TextAssetEditor_v2")
 		->AddArea
 		(
 			FTabManager::NewPrimaryArea()
-				->SetOrientation(Orient_Horizontal)
+				->SetOrientation(Orient_Vertical)
 				->Split
 				(
-					FTabManager::NewSplitter()
-						->SetOrientation(Orient_Vertical)
-						->SetSizeCoefficient(0.66f)
-						->Split
-						(
-							FTabManager::NewStack()
-								->AddTab(GetToolbarTabId(), ETabState::OpenedTab)
-								->SetHideTabWell(true)
-								->SetSizeCoefficient(0.1f)
-								
-						)
-						->Split
-						(
-							FTabManager::NewStack()
-								->AddTab(TextAssetEditor::TabId, ETabState::OpenedTab)
-								->SetHideTabWell(true)
-								->SetSizeCoefficient(0.9f)
-						)
+					FTabManager::NewStack()
+						->AddTab(TextAssetEditor::TabId, ETabState::OpenedTab)
+						->SetHideTabWell(true)
+						->SetSizeCoefficient(0.9f)
 				)
 		);
 
@@ -102,7 +91,7 @@ void FTextAssetEditorToolkit::Initialize(UTextAsset* InTextAsset, const EToolkit
 
 FString FTextAssetEditorToolkit::GetDocumentationLink() const
 {
-	return FString(TEXT("https://github.com/ue4plugins/TextAsset"));
+	return FString(TEXT("https://github.com/PandaDex/TextAsset_UE5"));
 }
 
 
@@ -116,7 +105,7 @@ void FTextAssetEditorToolkit::RegisterTabSpawners(const TSharedRef<FTabManager>&
 	InTabManager->RegisterTabSpawner(TextAssetEditor::TabId, FOnSpawnTab::CreateSP(this, &FTextAssetEditorToolkit::HandleTabManagerSpawnTab, TextAssetEditor::TabId))
 		.SetDisplayName(LOCTEXT("TextEditorTabName", "Text Editor"))
 		.SetGroup(WorkspaceMenuCategoryRef)
-		.SetIcon(FSlateIcon(FEditorStyle::GetStyleSetName(), "LevelEditor.Tabs.Viewports"));
+		.SetIcon(FSlateIcon(FAppStyle::GetAppStyleSetName(), "LevelEditor.Tabs.Viewports"));
 }
 
 
@@ -160,7 +149,15 @@ FString FTextAssetEditorToolkit::GetWorldCentricTabPrefix() const
 
 void FTextAssetEditorToolkit::AddReferencedObjects(FReferenceCollector& Collector)
 {
+	// TextAsset is now a TObjectPtr<UTextAsset>, which resolves to the
+	// incremental-GC-safe AddReferencedObject overload automatically.
 	Collector.AddReferencedObject(TextAsset);
+}
+
+
+FString FTextAssetEditorToolkit::GetReferencerName() const
+{
+	return TEXT("FTextAssetEditorToolkit");
 }
 
 
